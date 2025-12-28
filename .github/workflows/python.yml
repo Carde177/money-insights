@@ -1,10 +1,13 @@
-name: Run Python script
+name: Streamlit CI
 
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -13,7 +16,17 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
-      - name: Run script
-        run: MoneyInsights.py
+      - name: Verify imports
+        run: |
+          python - <<EOF
+          import streamlit
+          import pandas
+          import gspread
+          from google.oauth2.service_account import Credentials
+          print("All imports OK")
+          EOF
+
